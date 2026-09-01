@@ -1,8 +1,8 @@
 import { Router } from "express";
-import taskRouter from "./task/index.js"
+import taskRouter from "./tasks/index.js"
 
 const router = Router()
 
-router.use("/task", taskRouter)
+router.use("/tasks", taskRouter)
 
 export default router
