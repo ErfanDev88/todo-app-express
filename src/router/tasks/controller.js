@@ -1,63 +1,76 @@
 import { validationResult } from "express-validator";
 import _ from "lodash";
 
-let tasks = [
-  {
-    id: 1,
-    title: "Do homeworks",
-    description: "English",
-    status: false,
-  },
-];
+import Category from "../../models/category.js";
+import Task from "../../models/tasks.js";
 
-export default new (class {
-    getAllTasks(req, res){
-        return res.json({
-            message: "All task is here",
-            data: tasks
+// let tasks = [
+//   {
+//     id: 1,
+//     title: "Do homeworks",
+//     description: "English",
+//     status: false,
+//   },
+// ];
+
+export const getAllTasks = async (req, res)=>{
+    const tasks = await Task.find().populate("categoryId")
+    res.status(200).json(tasks)
+}
+
+export const getTaskById = async (req,res)=>{
+    const task = await Task.findById(req.params.id).populate("categoryId")
+    if(!task) 
+        return res.status(404).json({
+            msg:"task not found"
         })
-    }    
-    createTask(req,res){
-        const body = _.pick(req.body, ["id", "title", "description", "status"])
-        const exist = tasks.find((t)=> t.id == body.id)
-        if(exist) return res.status(400).send("id must be unique")
 
-        tasks.push(body)
+    res.status(200).json(task)    
+}
 
-        res.status(201).json({
-            message: "task created",
-            data: body
-        })
-    }
-    updateTask(req, res){
-        const body = _.pick(req.body, ["title", "description", "status"])
-        const exist = tasks.find((t)=> t.id == req.params.id)
-        if(!exist) return res.status(404).send("Task not found")
+export const createTask = async (req, res)=>{
+    const data = _.pick(req.body, ["title", "categoryId", "description"]);
+    const category = await Category.findById(data.categoryId)
+    if (!category) return res.status(404).send("no valid category found")
 
-        if(body.title) exist.title = body.title
-        if(body.description) exist.description = body.description
-        if(body.status) exist.status = body.status
+    const task = await Task.create(data);
 
-        const newResereved = tasks.filter((t)=> t.id != req.params.id)
-        tasks = newResereved
-        tasks.push(exist)
+    res.status(200).json(task);
+}
 
-        res.status(201).json({
-            message: "Task Updated",
-            data: tasks
-        })
-    }
-    deleteTask(req, res){
-        const exist = tasks.filter((t)=> t.id == req.params.id)
-        if(exist.length == 0) return res.status(404).send("Task not found")
 
-        const newResereved = tasks.filter((t)=> t.id != req.params.id)
-        tasks = newResereved
+export const updateTask = async (req , res) => {
 
-        res.status(201).json({
-            messages: "Task deleted successfully",
-            data: tasks
-        })
+    const data = _.pick(req.body, ["title", "categoryId", "description"]);
+
+    const task = await Task.findByIdAndUpdate(req.params.id, data, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!task) {
+      return res.status(404).json({
+        message: "task not found",
+      });
     }
 
-})();
+    res.status(200).json(task);
+
+};
+
+
+export const deleteTask = async (req, res, next) => {
+
+    const task = await Task.findByIdAndDelete(req.params.id);
+
+    if (!task) {
+      return res.status(404).json({
+        message: "task not found",
+      });
+    }
+
+    res.status(200).json({
+      message: "task deleted successfully",
+    });
+
+};

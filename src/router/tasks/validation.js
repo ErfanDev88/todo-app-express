@@ -1,14 +1,13 @@
 import { body } from "express-validator";
 
-export const createTask = [
-    body("id", "id is required, id must be a number").notEmpty().isInt(),
+export const createTaskValidation = [
     body("title", "title is required, title must be a stirng").notEmpty().isString(),
     body("description", "description is required, description must be a stirng").optional().isString(),
-    body("status", "status is required, status must be a boolean").notEmpty().isBoolean()
+    body("status", " status must be a boolean").optional().isBoolean()
 ]
 
-export const updateTask = [
+export const updateTaskValidation = [
     body("title", "title is required, title must be a stirng").notEmpty().isString(),
     body("description", "description is required, description must be a stirng").optional().isString(),
-    body("status", "status is required, status must be a boolean").notEmpty().isBoolean()
+    body("status", " status must be a boolean").optional().isBoolean()
 ]
