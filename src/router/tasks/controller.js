@@ -4,18 +4,18 @@ import _ from "lodash";
 import Category from "../../models/category.js";
 import Task from "../../models/tasks.js";
 
-// let tasks = [
-//   {
-//     id: 1,
-//     title: "Do homeworks",
-//     description: "English",
-//     status: false,
-//   },
-// ];
-
 export const getAllTasks = async (req, res)=>{
     const tasks = await Task.find().populate("categoryId")
     res.status(200).json(tasks)
+}
+
+export const pagination = async (req, res)=>{
+  const page = req.params.number
+  const num = 5;
+  
+    const tasks = await Task.find().populate("categoryId").limit(num).skip((page - 1) * num)
+
+    return res.status(200).json(tasks)
 }
 
 export const getTaskById = async (req,res)=>{
