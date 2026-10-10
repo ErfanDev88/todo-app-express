@@ -9,8 +9,11 @@ import {
 } from "./controller.js";
 import { createTaskValidation, updateTaskValidation } from "./validation.js";
 import { validationData } from "../../middleware/validation.js";
+import Authorazation from "../../middleware/auth.js";
 
 const task = Router();
+
+task.use(Authorazation)
 
 task.get("/", getAllTasks);
 task.get("/pagination/:number", pagination);

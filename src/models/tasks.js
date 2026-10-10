@@ -5,6 +5,7 @@ const taskSchema = new mongoose.Schema({
   categoryId: { type: mongoose.Schema.Types.ObjectId, ref: "Category" },
   description: { type: String, required: true },
   status: { type: Boolean, default: false },
+  created_by: {type: mongoose.Schema.Types.ObjectId, ref: "User"}
 });
 
 const Task = mongoose.model("Task", taskSchema);
